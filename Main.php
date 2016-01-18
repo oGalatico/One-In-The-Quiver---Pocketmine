@@ -32,11 +32,11 @@ use Main\BeginTask;
 class Main extends PluginBase implements Listener{
 
     public function OnEnable(){
-        $this->getLogger()->info(TextFormat::GREEN . "TurfWars Plugini Açıldı!!");
+        $this->getLogger()->info(TextFormat::GREEN . "TurfWars Plugin Has been Enabled!!");
 	}
 
     public function OnDisable(){
-        $this->getLogger()->info(TextFormat::RED . "TurfWars Plugini Kapandıı!!");
+        $this->getLogger()->info(TextFormat::RED . "TurfWars Plugin Has been Disabled!!");
 	}
 	
     public function OnJoin(PlayerJoinEvent $player){

@@ -1,7 +1,7 @@
 name: TurfWars
 api: 1.12.0
 version: InDEV
-main: tufwars\Main
+main: tufwars\tw\Main
 load: POSTWORLD
 author: EmreTr1
 website: not found

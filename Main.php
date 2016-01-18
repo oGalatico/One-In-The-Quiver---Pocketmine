@@ -2,7 +2,7 @@
 
 // MineDogsTeam @EmreTr1
 
-namespace lucky\emre;
+namespace turfwars\tw;
 
 use pocketmine\plugin\PluginBase;
 use pocketmine\Player;
@@ -29,9 +29,6 @@ use pocketmine\event\entity\EntityTeleportEvent;
 
 use Main\BeginTask;
 
-public $reds = [];
-public $blues = [];
-
 class Main extends PluginBase implements Listener{
 
     public function OnEnable(){
@@ -42,21 +39,23 @@ class Main extends PluginBase implements Listener{
         $this->getLogger()->info(TextFormat::RED . "TurfWars Plugini Kapandıı!!");
 	}
 	
-    public function OnJoin(Player, PlayerJoinEvent $event, $player){
+    public function OnJoin(PlayerJoinEvent $player){
         if($player->isOnline()){
-		$event->getplayer()->sendMessage("§aWelocome to The §bTurfWars §aServer! §eYou Playing On §5***.***.** Server! §6Have Fun :)");
+		$player->sendMessage("§aWelocome to The §bTurfWars §aServer! §eYou Playing On §5***.***.** Server! §6Have Fun :)");
 		$player->getInventory()->addItem(Item::get(Item::CLOCK, 0, 1));
 		}
+	}
 	
-public function onRun($tick){
-	foreach($this->plugin->getServer()->getOnlinePlayers() as $p){
-		if($this->plugin->gameduration == 642){
-		$onp = count($this->plugin->getServer()->getOnlinePlayers());
-		$need = 8;
-		$total = $need - $onp;
-		$t2 = $onp - $need;
-         $p->sendTip("Online: ".count($this->plugin->getServer()->getOnlinePlayers())."/8");
-		 $p->sendPopup("".$total. "Need Player!");
-	}		
+    public function onRun($tick){
+	    foreach($this->plugin->getServer()->getOnlinePlayers() as $p){
+		    if($this->plugin->gameduration == 642){	
+		        $onp = count($this->plugin->getServer()->getOnlinePlayers());	
+		        $need = 8;
+		        $total = $need - $onp;
+		        $t2 = $onp - $need;
+                $p->sendTip("Online: ".count($this->plugin->getServer()->getOnlinePlayers())."/8");
+		        $p->sendPopup("".$total. "Need Player!");
+			}
+		}
+	}
 }
-//i am writing...

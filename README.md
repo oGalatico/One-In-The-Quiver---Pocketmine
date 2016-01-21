@@ -8,14 +8,16 @@ One IN The Quive minigame for pocketmine
 - PlayerDeathEvent (%100) done
 - game starting event (%75) done
 - and other event and etc. (%24)
-- 
+
 # EXtra Features:
 - PopSounds (%0)
 - JOingame Sound (%0)
 - Join Game Particles (%0)
 - FinishGame Particles and Sound (%0)
 - Game Starting Events Sounds (%0)
+
 # MiniGame is Complated (%44)
+
 ---------------------------------------------
   #One IN The Quive == MinePlex Minigame
 ---------------------------------------------

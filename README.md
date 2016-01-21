@@ -1,13 +1,9 @@
-# TurfWars-pocketmine
-TurfWars minigame for pocketmine
+# One IN The Quiver-Pocketmine
+One IN The Quive minigame for pocketmine
  
-# UPTADE
-- added on enable and on disable
-- added join message
-- added commands
-- added particles
-- added spawnpos(%25)
-- added version
-- ...
-  #TURFWARS İNŞALLAH OLUR:)
-  -------------------------
+# MiniGame is Renamed !
+- Project is starting...
+- Coming Soon!!
+---------------------------------------------
+  #One IN The Quive == MİnePlex Minigame
+---------------------------------------------

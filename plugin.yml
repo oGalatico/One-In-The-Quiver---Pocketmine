@@ -1,14 +1,12 @@
-name: TurfWars
+name: TheQuiver
 api: 1.12.0
-version: InDEV
-main: tufwars\tw\Main
+version: 0.0.1
+main: tehquiver\tq\Main
 load: POSTWORLD
 author: EmreTr1
-website: not found
+website: minedogs.pe.hu
 
 
 commands:
- turfwars:
-  permission: tufwars.command.tw
-  description: TurfWars Main Command
-  usage: /tw <join|remove|create|leave|help>
+ One In The Quiver:
+ NOT FOUND

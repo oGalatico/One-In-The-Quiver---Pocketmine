@@ -7,7 +7,8 @@ One IN The Quive minigame for pocketmine
 - Language: Turkish :) //You can translate plugin
 - PlayerDeathEvent (%100) done
 - game starting event (%75) done
-- and other event and etc. (%24)
+- and other event and etc. (%24) done
+- Point System (%0) done
 
 # EXtra Features:
 - PopSounds (%0)

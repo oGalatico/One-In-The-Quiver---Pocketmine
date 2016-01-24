@@ -1,5 +1,5 @@
-# One IN The Quiver-Pocketmine
-One IN The Quive minigame for pocketmine
+# One In The Quiver-Pocketmine
+One In The Quive minigame for pocketmine
  
 # MiniGame PROGRAMMİNG !
 - Project is started!!

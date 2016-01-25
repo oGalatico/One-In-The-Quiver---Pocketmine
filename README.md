@@ -20,6 +20,6 @@ One In The Quive minigame for pocketmine
 # MiniGame is Completed (%44)
 
 ---------------------------------------------
-  #One IN The Quive == MinePlex Minigame
+  #One IN The Quiver == MinePlex Minigame
 ---------------------------------------------
  ---------- MineDogs Team --------

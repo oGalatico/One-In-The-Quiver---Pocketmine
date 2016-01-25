@@ -18,7 +18,7 @@ One In The Quive minigame for pocketmine
 - Game Starting Sounds (%0)
 
 # MiniGame is Completed (%70)
-# Minigame NOT FİNİSHED!!
+# Minigame NOT FINISHED!!
 
 ---------------------------------------------
   #One IN The Quiver == MinePlex Minigame

@@ -93,15 +93,15 @@ class Main extends PluginBase implements Listener
 		{
 			$this->config->set("godTime",15);
 		}
-		$this->endTime=(int)$this->config->get("endTime");//游戏时间
-		$this->gameTime=(int)$this->config->get("gameTime");//游戏时间
-		$this->waitTime=(int)$this->config->get("waitTime");//等待时间
-		$this->godTime=(int)$this->config->get("godTime");//无敌时间
-		$this->gameStatus=0;//Mevcut durum
-		$this->lastTime=0;//还没开始
-		$this->players=array();//加入游戏的玩家
-		$this->SetStatus=array();//设置状态
-		$this->all=0;//最大玩家数量
+		$this->endTime=(int)$this->config->get("endTime");
+		$this->gameTime=(int)$this->config->get("gameTime");
+		$this->waitTime=(int)$this->config->get("waitTime");
+		$this->godTime=(int)$this->config->get("godTime");
+		$this->gameStatus=0;
+		$this->lastTime=0;
+		$this->players=array();
+		$this->SetStatus=array();
+		$this->all=0;
 		$this->config->save();
 		$this->getServer()->getLogger()->info(TextFormat::GRAY."<-------------------------------------------------------------------------------->");
 		$this->getServer()->getLogger()->info(TextFormat::GREEN."[OneTheQuiver] Plugin Aktivite Edildi");
@@ -247,56 +247,6 @@ class Main extends PluginBase implements Listener
 		return true;
 	}
 	
-	public function onPlace(BlockPlaceEvent $event)
-	{
-		if(!isset($this->sign))
-		{
-			return;
-		}
-		$block=$event->getBlock();
-		if($this->PlayerIsInGame($event->getPlayer()->getName()) || $block->getLevel()==$this->level)
-		{
-			if(!$event->getPlayer()->isOp())
-			{
-				$event->setCancelled();
-			}
-		}
-		unset($block,$event);
-	}
-	
-	public function onMove(PlayerMoveEvent $event)
-	{
-		if(!isset($this->sign))
-		{
-			return;
-		}
-		if($this->PlayerIsInGame($event->getPlayer()->getName()) && $this->gameStatus<=1)
-		{
-			if(!$event->getPlayer()->isOp())
-			{
-				$event->setCancelled();
-			}
-		}
-		unset($event);
-	}
-	public function onBreak(BlockBreakEvent $event)
-	{
-		if(!isset($this->sign))
-		{
-			return;
-		}
-		$sign=$this->config->get("sign");
-		$block=$event->getBlock();
-		if($this->PlayerIsInGame($event->getPlayer()->getName()) || ($block->getX()==$sign["x"] && $block->getY()==$sign["y"] && $block->getZ()==$sign["z"] && $block->getLevel()->getFolderName()==$sign["level"]) || $block->getLevel()==$this->level)
-		{
-			if(!$event->getPlayer()->isOp())
-			{
-				$event->setCancelled();
-			}
-		}
-		unset($sign,$block,$event);
-	}
-	
 	public function onPlayerCommand(PlayerCommandPreprocessEvent $event)
 	{
 		if(!$this->PlayerIsInGame($event->getPlayer()->getName()) || $event->getPlayer()->isOp() || substr($event->getMessage(),0,1)!="/")
@@ -383,9 +333,6 @@ class Main extends PluginBase implements Listener
 			$i=0;
 			foreach($this->players as $key=>$val)
 			{
-				$i++;
-				$p=$this->getServer()->getPlayer($val["id"]);
-				echo($i."\n");
 				$p->setLevel($this->level);
 				eval("\$p->teleport(\$this->lobby);");
 				unset($p);
@@ -397,11 +344,8 @@ class Main extends PluginBase implements Listener
 			$i=0;
 			foreach($this->players as $key=>$val)
 			{
-				$i++;
-				$p=$this->getServer()->getPlayer($val["id"]);
-				echo($i."\n");
 				$p->setLevel($this->level);
-				eval("\$p->teleport(\$this->pos".$i.");");
+				eval("\$p->teleport(\$this->lobby);");
 				unset($p);
 			}
 			switch($this->lastTime)
@@ -436,13 +380,12 @@ class Main extends PluginBase implements Listener
 			case 0:
 				$this->gameStatus=2;
 				$this->sendToAll("§aGame Started!!!");
-				$p->getLevel()->addSound(new FizzSound($p));
 				$this->lastTime=$this->godTime;
-				$this->resetChest();
 				foreach($this->players as $key=>$val)
 				{
 					$p=$this->getServer()->getPlayer($val["id"]);
 					$p->setMaxHealth(25);
+					$p->getLevel()->addSound(new FizzSound($p));
 				        $effect = Effect::getEffect(1);
 		                        $effect->setDuration(999999999);
 		                        $effect->setVisible(false);
@@ -464,7 +407,7 @@ class Main extends PluginBase implements Listener
 			if($this->lastTime<=0)
 			{
 				$this->gameStatus=3;
-				$this->sendToAll("§aSavaş başladı,sandıklar yenilendi !");
+				$this->sendToAll("§aRound has been Started! !");
 				$this->lastTime=$this->gameTime;
 				$this->resetChest();
 			}
@@ -473,20 +416,19 @@ class Main extends PluginBase implements Listener
 		{
 			if(count($this->players)==1)
 			{
-				$this->sendToAll("[MD-SG] Oyun bitti");
+				$this->sendToAll("[TheQuiver] Oyun bitti");
 
 				foreach($this->players as &$pl)
 				{
 					$p=$this->getServer()->getPlayer($pl["id"]);
 					Server::getInstance()->broadcastMessage("§e[TheQuiver]§a ".$p->getName()."§2 has won The Game!");
-					$p->setLevel($this->signlevel);
+					$p->setLevel($this->lobby);
 					$p->getInventory()->clearAll();
 					$p->setMaxHealth(25);
 					$p->setHealth(25);
-					$p->teleport($this->signlevel->getSpawnLocation());
+					$p->teleport($this->lobby->getSpawnLocation());
 					unset($pl,$p);
 				}
-				$this->clearChest();
 				$this->players=array();
 				$this->gameStatus=0;
 				$this->lastTime=0;
@@ -494,7 +436,7 @@ class Main extends PluginBase implements Listener
 			}
 			else if(count($this->players)==0)
 			{
-				Server::getInstance()->broadcastMessage("§e[MD-SG] §aOyuncular Tamamen öldü, Oyun Bitti.");
+				Server::getInstance()->broadcastMessage("§e[TheQuiver] §e Game Finished!.");
 				$this->gameStatus=0;
 				$this->lastTime=0;
 				$this->clearChest();
@@ -591,16 +533,6 @@ class Main extends PluginBase implements Listener
 		unset($name,$money);
 	}
 	
-	public function resetChest()
-	{
-		FChestReset::getInstance()->ResetChest();
-	}
-	
-	public function clearChest()
-	{
-		FChestReset::getInstance()->ClearChest();
-	}
-	
 	public function changeStatusSign()
 	{
 		if(!isset($this->sign))
@@ -613,10 +545,10 @@ class Main extends PluginBase implements Listener
 			switch($this->gameStatus)
 			{
 			case 0:
-				$sign->setText("§2Survival§fGames§6",count($this->players)."§9/§18","§fHarita:§e SG-1","§l§b============");
+				$sign->setText("§2TheQuiver§6",count($this->players)."§9/§18","§fHarita:§e SG-1","§l§b============");
 				break;
 			case 1:
-				$sign->setText("§2Survival§fGames§6",count($this->players)."§9/§18","§fHarita:§e SG-1","§l§b============");
+				$sign->setText("§2TheQuiver§6",count($this->players)."§9/§18","§fHarita:§e SG-1","§l§b============");
 				break;
 			case 2:
 				$sign->setText("§7[§5Sürüyor§7]§6",count($this->players)."§9/§18","§fHarita:§e SG-1","§l§b============");
@@ -625,7 +557,7 @@ class Main extends PluginBase implements Listener
 				$sign->setText("§7[§5Sürüyor§7]§6",count($this->players)."§9/§18","§fHarita:§e SG-1","§l§b============");
 				break;
 			case 4:
-				$sign->setText("§7[§cDeathMatch§7]§6",count($this->players)."§9/§18","§fHarita:§e SG-1","§l§b============");
+				$sign->setText("§7[§c§7]§6",count($this->players)."§9/§18","§fHarita:§e SG-1","§l§b============");
 				break;
 			}
 		}
@@ -646,18 +578,18 @@ class Main extends PluginBase implements Listener
 					$player->sendMessage(TextFormat::GREEN."Maç Dolu! Oyun Başliyor...");
 					return;
 				}
-				$this->sign=array(
+				$this->lobby=array(
 					"x" =>$block->getX(),
 					"y" =>$block->getY(),
 					"z" =>$block->getZ(),
 					"level" =>$levelname);
-				$this->config->set("sign",$this->sign);
+				$this->config->set("lobby",$this->lobby);
 				$this->config->save();
 				$this->SetStatus[$username]++;
 				$player->sendMessage(TextFormat::GREEN."Tabela Secildi !");
 				$player->sendMessage(TextFormat::GREEN."Simdi 1. Doguş Noktasini Seç!");
-				$this->signlevel=$this->getServer()->getLevelByName($this->config->get("sign")["level"]);
-				$this->sign=new Vector3($this->sign["x"],$this->sign["y"],$this->sign["z"]);
+				$this->signlevel=$this->getServer()->getLevelByName($this->config->get("lobby")["level"]);
+				$this->lobby=new Vector3($this->lobby["x"],$this->lobby["y"],$this->lobby["z"]);
 				$this->changeStatusSign();
 				break;
 			case 1:
@@ -761,24 +693,9 @@ class Main extends PluginBase implements Listener
 				$this->config->save();
 				$this->SetStatus[$username]++;
 				$player->sendMessage(TextFormat::GREEN."8. Yerde Secildi!");
-				$player->sendMessage(TextFormat::GREEN."Son Olarak Deatmach Yerini Sec!");
+				$player->sendMessage(TextFormat::GREEN."TheQuiver has installed!");
 				$this->pos8=new Vector3($this->pos8["x"]+0.5,$this->pos8["y"],$this->pos8["z"]+0.5);
 				break;
-			case 9:
-				$this->lastpos=array(
-					"x" =>$block->x,
-					"y" =>$block->y,
-					"z" =>$block->z,
-					"level" =>$levelname);
-				$this->config->set("lastpos",$this->lastpos);
-				$this->config->save();
-				$this->lastpos=new Vector3($this->lastpos["x"]+0.5,$this->lastpos["y"],$this->lastpos["z"]+0.5);
-				unset($this->SetStatus[$username]);
-				$player->sendMessage(TextFormat::GREEN."Deatmach Yeri Secildi");
-				$player->sendMessage(TextFormat::GREEN."SurvivalGames basarıyla Kurulud!");
-				$this->level=$this->getServer()->getLevelByName($this->config->get("pos1")["level"]);				
-			}
-		}
 		else
 		{
 			$sign=$event->getPlayer()->getLevel()->getTile($event->getBlock());
@@ -821,10 +738,10 @@ class Main extends PluginBase implements Listener
 					{
 						if(count($this->players)>=6)
 						{
-							$event->getPlayer()->sendMessage("§6[MD§e-SG]§aOyun Başladı, Katılamazsınız");
+							$event->getPlayer()->sendMessage("§6[TheQuiver]§aOyun Başladı, Katılamazsınız");
 							return;
 						}
-						$this->sendToAll("§6[MD§e-SG]§a ".$event->getPlayer()->getName()." Oyuna Katildi !");
+						$this->sendToAll("§6[TheQuiver]§a ".$event->getPlayer()->getName()." Oyuna Katildi !");
 						$this->players[$event->getPlayer()->getName()]=array("id"=>$event->getPlayer()->getName());
 						$event->getPlayer()->sendMessage("§9>§aOyuna Başarıyla Katıldın !");
 		                                $effect = Effect::getEffect(2);
@@ -852,8 +769,8 @@ class Main extends PluginBase implements Listener
 				}
 				else
 				{
-					$event->getPlayer()->sendMessage("§6[MD§e-SG]§aOyun Başladı, Katılamazsınız");
-					$event->getPlayer()->sendMessage("§6[MD§e-SG]§eOyunun Bitmesini Bekleyiniz.");
+					$event->getPlayer()->sendMessage("§6[TheQuiver]§aOyun Başladı, Katılamazsınız");
+					$event->getPlayer()->sendMessage("§6[TheQuiver]§eOyunun Bitmesini Bekleyiniz.");
 				}
 			}
 		}
@@ -895,18 +812,18 @@ class Main extends PluginBase implements Listener
 		{	
 			unset($this->players[$event->getPlayer()->getName()]);
 			$this->ClearInv($event->getPlayer());
-			$this->sendToAll("§6[MD§e-SG]§a".$event->getPlayer()->getName()." Oyundan ayrıldı");
+			$this->sendToAll("§6[TheQuiver]§a".$event->getPlayer()->getName()." Oyundan ayrıldı");
 			$this->changeStatusSign();
 			if($this->gameStatus==1 && count($this->players)<2)
 			{
 				$this->gameStatus=0;
 				$this->lastTime=0;
-				$this->sendToAll("§6[MD§e-SG]§a Oyuncu yetersiz oldugu için geri sayım durduruldu");
+				$this->sendToAll("§6[TheQuiver]§a Oyuncu yetersiz oldugu için geri sayım durduruldu");
 				foreach($this->players as $pl)
 				{
 					$p=$this->getServer()->getPlayer($pl["id"]);
-					$p->setLevel($this->signlevel);
-					$p->teleport($this->signlevel->getSpawnLocation());
+					$p->setLevel($this->lobby);
+					$p->teleport($this->lobby->getSpawnLocation());
 					unset($p,$pl);
 				}
 			}

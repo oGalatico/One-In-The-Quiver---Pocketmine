@@ -458,4 +458,464 @@ class Main extends PluginBase implements Listener
 				break;
 			}
 		}
-		//I'm working on about...
+		if($this->gameStatus==2)
+		{
+			$this->lastTime--;
+			if($this->lastTime<=0)
+			{
+				$this->gameStatus=3;
+				$this->sendToAll("§aSavaş başladı,sandıklar yenilendi !");
+				$this->lastTime=$this->gameTime;
+				$this->resetChest();
+			}
+		}
+		if($this->gameStatus==3 || $this->gameStatus==4)
+		{
+			if(count($this->players)==1)
+			{
+				$this->sendToAll("[MD-SG] Oyun bitti");
+
+				foreach($this->players as &$pl)
+				{
+					$p=$this->getServer()->getPlayer($pl["id"]);
+					Server::getInstance()->broadcastMessage("§e[TheQuiver]§a ".$p->getName()."§2 has won The Game!");
+					$p->setLevel($this->signlevel);
+					$p->getInventory()->clearAll();
+					$p->setMaxHealth(25);
+					$p->setHealth(25);
+					$p->teleport($this->signlevel->getSpawnLocation());
+					unset($pl,$p);
+				}
+				$this->clearChest();
+				$this->players=array();
+				$this->gameStatus=0;
+				$this->lastTime=0;
+				return;
+			}
+			else if(count($this->players)==0)
+			{
+				Server::getInstance()->broadcastMessage("§e[MD-SG] §aOyuncular Tamamen öldü, Oyun Bitti.");
+				$this->gameStatus=0;
+				$this->lastTime=0;
+				$this->clearChest();
+				$this->ClearAllInv();
+				return;
+			}
+		}
+		if($this->gameStatus==3)
+		{
+			$this->lastTime--;
+			switch($this->lastTime)
+			{
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+			case 10:
+				$this->sendToAll("§bDeathmach Başlamasına ".$this->lastTime." Saniye. Kaldı !");
+				break;
+			case 0:
+				$this->sendToAll("§cDeathMatch §eBaşladıı !! İyi Olan Kazansın !");
+				foreach($this->players as $pl)
+				{
+					$p=$this->getServer()->getPlayer($pl["id"]);
+					$p->setLevel($this->level);
+					$p->teleport($this->lastpos);
+					unset($p,$pl);
+				}
+				$this->gameStatus=4;
+				$this->lastTime=$this->endTime;
+				break;
+			}
+		}
+		if($this->gameStatus==4)
+		{
+			$this->lastTime--;
+			switch($this->lastTime)
+			{
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+			case 10:
+			case 20:
+			case 30:
+				$this->sendToAll("Maçın Sonlanmasına ".$this->lastTime." Sn. Kaldı !");
+                    $this->sendToAll("Maçın Sonlanmasına ".$this->lastTime." Saniye. Kaldı !");
+				break;
+			case 0:
+				$this->sendToAll("§eMaç Sonlandı !");
+				Server::getInstance()->broadcastMessage("§bKazanan §c Yok !");
+				foreach($this->players as $pl)
+				{
+					$p=$this->getServer()->getPlayer($pl["id"]);
+					$p->setLevel($this->signlevel);
+					$p->teleport($this->signlevel->getSpawnLocation());
+					$p->getInventory()->clearAll();
+					$p->setMaxHealth(25);
+					$p->setHealth(25);
+					unset($p,$pl);
+				}
+				$this->clearChest();
+				$this->ClearAllInv();
+				$this->players=array();
+				$this->gameStatus=0;
+				$this->lastTime=0;
+				break;
+			}
+		}
+		$this->changeStatusSign();
+	}
+	
+	public function getMoney($name){
+		return EconomyAPI::getInstance()->myMoney($name);
+	}
+	
+	public function addMoney($name,$money){
+		EconomyAPI::getInstance()->addMoney($name,$money);
+		unset($name,$money);
+	}
+	
+	public function setMoney($name,$money){
+		EconomyAPI::getInstance()->setMoney($name,$money);
+		unset($name,$money);
+	}
+	
+	public function resetChest()
+	{
+		FChestReset::getInstance()->ResetChest();
+	}
+	
+	public function clearChest()
+	{
+		FChestReset::getInstance()->ClearChest();
+	}
+	
+	public function changeStatusSign()
+	{
+		if(!isset($this->sign))
+		{
+			return;
+		}
+		$sign=$this->signlevel->getTile($this->sign);
+		if($sign instanceof Sign)
+		{
+			switch($this->gameStatus)
+			{
+			case 0:
+				$sign->setText("§2Survival§fGames§6",count($this->players)."§9/§18","§fHarita:§e SG-1","§l§b============");
+				break;
+			case 1:
+				$sign->setText("§2Survival§fGames§6",count($this->players)."§9/§18","§fHarita:§e SG-1","§l§b============");
+				break;
+			case 2:
+				$sign->setText("§7[§5Sürüyor§7]§6",count($this->players)."§9/§18","§fHarita:§e SG-1","§l§b============");
+				break;
+			case 3:
+				$sign->setText("§7[§5Sürüyor§7]§6",count($this->players)."§9/§18","§fHarita:§e SG-1","§l§b============");
+				break;
+			case 4:
+				$sign->setText("§7[§cDeathMatch§7]§6",count($this->players)."§9/§18","§fHarita:§e SG-1","§l§b============");
+				break;
+			}
+		}
+		unset($sign);
+	}
+	public function playerBlockTouch(PlayerInteractEvent $event){
+		$player=$event->getPlayer();
+		$username=$player->getName();
+		$block=$event->getBlock();
+		$levelname=$player->getLevel()->getFolderName();
+		if(isset($this->SetStatus[$username]))
+		{
+			switch ($this->SetStatus[$username])
+			{
+			case 0:
+				if($event->getBlock()->getID() != 63 && $event->getBlock()->getID() != 68)
+				{
+					$player->sendMessage(TextFormat::GREEN."Maç Dolu! Oyun Başliyor...");
+					return;
+				}
+				$this->sign=array(
+					"x" =>$block->getX(),
+					"y" =>$block->getY(),
+					"z" =>$block->getZ(),
+					"level" =>$levelname);
+				$this->config->set("sign",$this->sign);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."Tabela Secildi !");
+				$player->sendMessage(TextFormat::GREEN."Simdi 1. Doguş Noktasini Seç!");
+				$this->signlevel=$this->getServer()->getLevelByName($this->config->get("sign")["level"]);
+				$this->sign=new Vector3($this->sign["x"],$this->sign["y"],$this->sign["z"]);
+				$this->changeStatusSign();
+				break;
+			case 1:
+				$this->pos1=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos1",$this->pos1);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."1.Doguş Noktasi Secildi");
+				$player->sendMessage(TextFormat::GREEN."Simdi 2. Doğus Noktasini Sec!");
+				$this->pos1=new Vector3($this->pos1["x"]+0.5,$this->pos1["y"],$this->pos1["z"]+0.5);
+				break;
+			case 2:
+				 $this->pos2=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos2",$this->pos2);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."2. Secildi");
+				$player->sendMessage(TextFormat::GREEN."Simdim3. yeri sec!");
+				$this->pos2=new Vector3($this->pos2["x"]+0.5,$this->pos2["y"],$this->pos2["z"]+0.5);
+				break;	
+			case 3:
+				$this->pos3=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos3",$this->pos3);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."3. Yer Secildi");
+				$player->sendMessage(TextFormat::GREEN."Simdi 4. Yeri Sec!");
+				$this->pos3=new Vector3($this->pos3["x"]+0.5,$this->pos3["y"],$this->pos3["z"]+0.5);
+				break;	
+			case 4:
+				$this->pos4=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos4",$this->pos4);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."4. Yer Secildi");
+				$player->sendMessage(TextFormat::GREEN."Simdi 5. Yeri Sec!");
+				$this->pos4=new Vector3($this->pos4["x"]+0.5,$this->pos4["y"],$this->pos4["z"]+0.5);
+				break;
+			case 5:
+				$this->pos5=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos5",$this->pos5);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."5. Yer Secildi");
+				$player->sendMessage(TextFormat::GREEN."Simdi 6. Yeri Sec!");
+				$this->pos5=new Vector3($this->pos5["x"]+0.5,$this->pos5["y"],$this->pos5["z"]+0.5);
+				break;
+			case 6:
+				$this->pos6=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos6",$this->pos6);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."6. Yer Secildi");
+				$player->sendMessage(TextFormat::GREEN."Simdi 7. Yeri Sec!");
+				$this->pos6=new Vector3($this->pos6["x"]+0.5,$this->pos6["y"],$this->pos6["z"]+0.5);
+				break;
+			case 7:
+				$this->pos7=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos7",$this->pos7);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."7. Yer Secildi !");
+				$player->sendMessage(TextFormat::GREEN."Simdi 8. Yeri Sec!");
+				$this->pos7=new Vector3($this->pos7["x"]+0.5,$this->pos7["y"],$this->pos7["z"]+0.5);
+				break;	
+			case 8:
+				$this->pos8=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("pos8",$this->pos8);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."8. Yerde Secildi!");
+				$player->sendMessage(TextFormat::GREEN."Son Olarak Deatmach Yerini Sec!");
+				$this->pos8=new Vector3($this->pos8["x"]+0.5,$this->pos8["y"],$this->pos8["z"]+0.5);
+				break;
+			case 9:
+				$this->lastpos=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("lastpos",$this->lastpos);
+				$this->config->save();
+				$this->lastpos=new Vector3($this->lastpos["x"]+0.5,$this->lastpos["y"],$this->lastpos["z"]+0.5);
+				unset($this->SetStatus[$username]);
+				$player->sendMessage(TextFormat::GREEN."Deatmach Yeri Secildi");
+				$player->sendMessage(TextFormat::GREEN."SurvivalGames basarıyla Kurulud!");
+				$this->level=$this->getServer()->getLevelByName($this->config->get("pos1")["level"]);				
+			}
+		}
+		else
+		{
+			$sign=$event->getPlayer()->getLevel()->getTile($event->getBlock());
+			if(isset($this->lastpos) && $this->lastpos!=array() && $sign instanceof Sign && $sign->getX()==$this->sign->x && $sign->getY()==$this->sign->y && $sign->getZ()==$this->sign->z && $event->getPlayer()->getLevel()->getFolderName()==$this->config->get("sign")["level"])
+			{
+				if(!$this->config->exists("lastpos"))
+				{
+					$event->getPlayer()->sendMessage("§9> §e Oyuna Katılınılıyor.. @");
+					$event->getPlayer()->getLevel()->addSound(new ClickSound($p));
+					return;
+				}
+				if(!$event->getPlayer()->hasPermission("FSurvivalGame.touch.startgame"))
+				{
+					$event->getPlayer()->sendMessage("Yetkiniz Yok, Katilamassiniz.");
+					return;
+				}
+				if(!$event->getPlayer()->isOp())
+				{
+					$inv=$event->getPlayer()->getInventory();
+					for($i=0;$i<$inv->getSize();$i++)
+    				{
+    					if($inv->getItem($i)->getID()!=0)
+    					{
+    						$event->getPlayer()->sendMessage("Oyuna katılabilmek için envanterindeki tüm eşyaları at ");
+    						return;
+    					}
+    				}
+    				foreach($inv->getArmorContents() as $i)
+    				{
+    					if($i->getID()!=0)
+    					{
+    						$event->getPlayer()->sendMessage("lol");
+    						return;
+    					}
+    				}
+    			}
+				if($this->gameStatus==0 || $this->gameStatus==1)
+				{
+					if(!isset($this->players[$event->getPlayer()->getName()]))
+					{
+						if(count($this->players)>=6)
+						{
+							$event->getPlayer()->sendMessage("§6[MD§e-SG]§aOyun Başladı, Katılamazsınız");
+							return;
+						}
+						$this->sendToAll("§6[MD§e-SG]§a ".$event->getPlayer()->getName()." Oyuna Katildi !");
+						$this->players[$event->getPlayer()->getName()]=array("id"=>$event->getPlayer()->getName());
+						$event->getPlayer()->sendMessage("§9>§aOyuna Başarıyla Katıldın !");
+		                                $effect = Effect::getEffect(2);
+		                                $effect->setDuration(999999999);
+		                                $effect->setVisible(false);
+	                                        $p->addEffect($effect);
+		                                $p->getInventory()->addItem(Item::get(347, 0, 1));
+						if($this->gameStatus==0 && count($this->players)>=2)
+						{
+							$this->gameStatus=1;
+							$this->lastTime=$this->waitTime;
+							$this->sendToAll("§9>§a Oyunun Başlamasını Bekleme Zamanı !");
+						}
+						if(count($this->players)==8 && $this->gameStatus==1 && $this->lastTime>5)
+						{
+							$this->sendToAll("oyuncular hazır mısınız ?");
+							$this->lastTime=5;
+						}
+						$this->changeStatusSign();
+					}
+					else
+					{
+						$event->getPlayer()->sendMessage("§6[BİLGİ]§e SG Den Çıkmak İçin  §a/lobby§e Komutunu Giriniz.");
+					}
+				}
+				else
+				{
+					$event->getPlayer()->sendMessage("§6[MD§e-SG]§aOyun Başladı, Katılamazsınız");
+					$event->getPlayer()->sendMessage("§6[MD§e-SG]§eOyunun Bitmesini Bekleyiniz.");
+				}
+			}
+		}
+	}
+	
+	public function ClearInv($player)
+	{
+		if(!$player instanceof Player)
+		{
+			unset($player);
+			return;
+		}
+		$inv=$player->getInventory();
+		if(!$inv instanceof Inventory)
+		{
+			unset($player,$inv);
+			return;
+		}
+		$inv->clearAll();
+		unset($player,$inv);
+	}
+	
+	public function ClearAllInv()
+	{
+		foreach($this->players as $pl)
+		{
+			$player=$this->getServer()->getPlayer($pl["id"]);
+			if(!$player instanceof Player)
+			{
+				continue;
+			}
+			$this->ClearInv($player);
+		}
+		unset($pl,$player);
+	}
+	
+	public function PlayerQuit(PlayerQuitEvent $event){
+		if(isset($this->players[$event->getPlayer()->getName()]))
+		{	
+			unset($this->players[$event->getPlayer()->getName()]);
+			$this->ClearInv($event->getPlayer());
+			$this->sendToAll("§6[MD§e-SG]§a".$event->getPlayer()->getName()." Oyundan ayrıldı");
+			$this->changeStatusSign();
+			if($this->gameStatus==1 && count($this->players)<2)
+			{
+				$this->gameStatus=0;
+				$this->lastTime=0;
+				$this->sendToAll("§6[MD§e-SG]§a Oyuncu yetersiz oldugu için geri sayım durduruldu");
+				foreach($this->players as $pl)
+				{
+					$p=$this->getServer()->getPlayer($pl["id"]);
+					$p->setLevel($this->signlevel);
+					$p->teleport($this->signlevel->getSpawnLocation());
+					unset($p,$pl);
+				}
+			}
+		}
+	}
+	
+	public function onDisable(){
+		
+	}
+}
+?>
+

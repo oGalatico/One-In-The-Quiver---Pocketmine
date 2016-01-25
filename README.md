@@ -12,9 +12,9 @@ One In The Quive minigame for pocketmine
 
 # EXtra Features:
 - PopSounds (%50) there may be errors :D
-- Joingame Sound (%100) there may be errors :D
-- Join Game Particles (%0)
-- FinishGame Particles and Sound (%0)
+- the voices in the game (%100) there may be errors :D
+- the particles in the game (%0)
+- Game Finish particles (%0)
 - Game Starting Sounds (%0)
 
 # MiniGame is Completed (%70)

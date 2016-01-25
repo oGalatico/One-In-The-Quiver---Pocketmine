@@ -165,7 +165,7 @@ class Main extends PluginBase implements Listener
 			}
 			break;
 		case "remove":
-			$this->config->remove("sign");
+			$this->config->remove("lobby");
 			$this->config->remove("pos1");
 			$this->config->remove("pos2");
 			$this->config->remove("pos3");
@@ -176,7 +176,7 @@ class Main extends PluginBase implements Listener
 			$this->config->remove("pos8");
 			$this->config->remove("lastpos");
 			$this->config->save();
-			unset($this->sign,$this->pos1,$this->pos2,$this->pos3,$this->pos4,$this->pos5,$this->pos6,$this->pos7,$this->pos8,$this->lastpos);
+			unset($this->lobby,$this->pos1,$this->pos2,$this->pos3,$this->pos4,$this->pos5,$this->pos6,$this->pos7,$this->pos8,$this->lastpos);
 			$sender->sendMessage("[§eOneTheQuiver] §9(KURULUM) §aHedefi Başarıyla Seçildi!");
 			break;
 		case "start":
@@ -228,17 +228,17 @@ class Main extends PluginBase implements Listener
 			{
 				$this->config->set("godTime",15);
 			}
-			$this->endTime=(int)$this->config->get("endTime");//游戏时间
-			$this->gameTime=(int)$this->config->get("gameTime");//游戏时间
-			$this->waitTime=(int)$this->config->get("waitTime");//等待时间
-			$this->godTime=(int)$this->config->get("godTime");//无敌时间
-			$this->gameStatus=0;//当前状态
-			$this->lastTime=0;//还没开始
-			$this->players=array();//加入游戏的玩家
-			$this->SetStatus=array();//设置状态
-			$this->all=0;//最大玩家数量
+			$this->endTime=(int)$this->config->get("endTime");
+			$this->gameTime=(int)$this->config->get("gameTime");
+			$this->waitTime=(int)$this->config->get("waitTime");
+			$this->godTime=(int)$this->config->get("godTime");
+			$this->gameStatus=0;
+			$this->lastTime=0;
+			$this->players=array();
+			$this->SetStatus=array();
+			$this->all=0;
 			$this->config->save();
-			$sender->sendPopUp("[游戏系统] [饥饿游戏] 重载完成");
+			$sender->sendPopUp("Config Saved!");
 			break;
 		default:
 			return false;
@@ -312,7 +312,7 @@ class Main extends PluginBase implements Listener
 			break;
 		default:
 			$event->setCancelled();
-			$event->getPlayer()->sendMessage("TEST yOUr Player");
+			$event->getPlayer()->sendMessage("TEST Your Player");
 			$event->getPlayer()->sendMessage(" §e[INFO] §7Oyundan Çıkmak İçin §5/kill§e veya§b /lobby §eKomutunu Girebilirsiniz ");
 			break;
 		}
@@ -372,7 +372,6 @@ class Main extends PluginBase implements Listener
 		if(!$this->signlevel instanceof Level)
 		{
 			$this->level=$this->getServer()->getLevelByName($this->config->get("pos1")["level"]);
-			$this->signlevel=$this->getServer()->getLevelByName($this->config->get("sign")["level"]);
 			if(!$this->signlevel instanceof Level)
 			{
 				return;
@@ -443,8 +442,16 @@ class Main extends PluginBase implements Listener
 				foreach($this->players as $key=>$val)
 				{
 					$p=$this->getServer()->getPlayer($val["id"]);
-					$p->setMaxHealth(20);
-					$p->setHealth(20);
+					$p->setMaxHealth(25);
+				        $effect = Effect::getEffect(1);
+		                        $effect->setDuration(999999999);
+		                        $effect->setVisible(false);
+		                        $p->addEffect($effect);
+		                        $p->getInventory()->addItem(Item::get(272, 0, 1));
+		                        $p->getInventory()->addItem(Item::get(261, 0, 1));
+		                        $p->getInventory()->addItem(Item::get(262, 0, 1));
+					$p->setHealth(25);
+					
 					$p->setLevel($this->level);
 				}
 				$this->all=count($this->players);

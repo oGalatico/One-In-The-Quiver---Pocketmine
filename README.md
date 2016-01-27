@@ -17,7 +17,7 @@ One In The Quive minigame for pocketmine
 - Game Finish particles (%0)
 - Game Starting Sounds (%0)
 
-# MiniGame is Completed (%70)
+# :=) ?
 # Minigame NOT FINISHED!!
 
 ---------------------------------------------

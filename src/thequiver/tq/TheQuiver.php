@@ -285,7 +285,7 @@ class Main extends PluginBase implements Listener
 		    	if($this->PlayerIsInGame($player->getName()) && !$this->PlayerIsInGame($killer->getName()) && !$killer->isOp())
 		    	{
 		    		$event->setCancelled();
-		    		$killer->sendPopUp("Played");
+		    		$killer->sendPopUp("damage!");
 		    		$killer->kill();
 		    	}
 		    }
@@ -302,7 +302,10 @@ class Main extends PluginBase implements Listener
 	public function PlayerDeath(PlayerDeathEvent $event){
 		$event->getPlayer()->setLevel($this->level);
 		$event->getPlayer()->teleport($this->pos".$i.");
-		$event->getPlayer()->sendMessage("§aRespawning...");
+		$event->getPlayer()->sendTip("§aRespawning...");
+		$event->getPlayer()->getInventory()->addItem(Item::get(272, 0, 1));
+		$event->getPlayer()->getInventory()->addItem(Item::get(261, 0, 1));
+		$event->getPlayer()->getInventory()->addItem(Item::get(262, 0, 1));
 	}
 	
 	public function sendToAll($msg){
@@ -575,7 +578,7 @@ class Main extends PluginBase implements Listener
 			case 0:
 				if($event->getBlock()->getID() != 63 && $event->getBlock()->getID() != 68)
 				{
-					$player->sendMessage(TextFormat::GREEN."Maç Dolu! Oyun Başliyor...");
+					$player->sendMessage(TextFormat::GREEN."Lutfen Config dosyalrını sil /tq remove...");
 					return;
 				}
 				$this->lobby=array(
@@ -698,8 +701,8 @@ class Main extends PluginBase implements Listener
 				break;
 		else
 		{
-			$sign=$event->getPlayer()->getLevel()->getTile($event->getBlock());
-			if(isset($this->lastpos) && $this->lastpos!=array() && $sign instanceof Sign && $sign->getX()==$this->sign->x && $sign->getY()==$this->sign->y && $sign->getZ()==$this->sign->z && $event->getPlayer()->getLevel()->getFolderName()==$this->config->get("sign")["level"])
+	                $lobby=$event->getPlayer()->getLevel()->getTile($event->getBlock());
+			if(isset($this->lastpos) && $this->lastpos!=array() && $lobby instanceof lobby && $lobby->getX()==$this->lobby->x && $lobby->getY()==$this->lobby->y && $lobby->getZ()==$this->lobby->z && $event->getPlayer()->getLevel()->getFolderName()==$this->config->get("lobby")["level"])
 			{
 				if(!$this->config->exists("lastpos"))
 				{

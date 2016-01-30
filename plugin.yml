@@ -1,12 +1,33 @@
 name: TheQuiver
-api: 1.12.0
-version: 0.0.1
-main: thequiver\tq\TheQuiver
+main: TheQuiver\Main
+version: 1.0.3
+api: [1.0.0]
 load: POSTWORLD
 author: EmreTr1
-website: minedogs.pe.hu
-
-
 commands:
- One In The Quiver:
- NOT FOUND
+ tq:
+  permission: TheQuiver.command.fsg
+  description: TheQuiver
+  usage: /tq <set|remove>
+ lobby:
+  permission: TheQuiver.command.lobby
+  description: lobiye doner
+  usage: /lobby
+permissions:
+ TheQuiver.*:
+  description: hepsi
+  default: false
+  children:
+   TheQuiver.command.*:
+    description: cocuk
+    default: false
+    children:
+     TheQuiver.command.lobby:
+      description: lobi ye doner
+      default: true
+     TheQuiver.command.fsg:
+      description: TheQuiver
+      default: op
+   TheQuiver.touch.startgame:
+    description: TheQuiver
+    default: true

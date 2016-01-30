@@ -299,13 +299,16 @@ class Main extends PluginBase implements Listener
 		return isset($this->players[$name]);
 	}
 	
-	public function PlayerDeath(PlayerDeathEvent $event){
-		$event->getPlayer()->setLevel($this->level);
-		$event->getPlayer()->teleport($this->pos".$i.");
-		$event->getPlayer()->sendTip("§aRespawning...");
-		$event->getPlayer()->getInventory()->addItem(Item::get(272, 0, 1));
-		$event->getPlayer()->getInventory()->addItem(Item::get(261, 0, 1));
-		$event->getPlayer()->getInventory()->addItem(Item::get(262, 0, 1));
+	public function PlayerDeath(PlayerDeathEvent $event)
+	{
+	$p = $event->getPlayer;
+		$p->setLevel($this->level);
+		eval("\$p->teleport(\$this->pos".$i.");");
+		unset($p);
+		$p->sendTip("§aRespawning...");
+		$p->getInventory()->addItem(Item::get(272, 0, 1));
+		$p->getInventory()->addItem(Item::get(261, 0, 1));
+		$p->getInventory()->addItem(Item::get(262, 0, 1));
 	}
 	
 	public function sendToAll($msg){
@@ -581,21 +584,34 @@ class Main extends PluginBase implements Listener
 					$player->sendMessage(TextFormat::GREEN."Lutfen Config dosyalrını sil /tq remove...");
 					return;
 				}
-				$this->lobby=array(
+				$this->sign=array(
 					"x" =>$block->getX(),
 					"y" =>$block->getY(),
 					"z" =>$block->getZ(),
 					"level" =>$levelname);
-				$this->config->set("lobby",$this->lobby);
+				$this->config->set("sign",$this->sign);
 				$this->config->save();
 				$this->SetStatus[$username]++;
 				$player->sendMessage(TextFormat::GREEN."Tabela Secildi !");
 				$player->sendMessage(TextFormat::GREEN."Simdi 1. Doguş Noktasini Seç!");
-				$this->signlevel=$this->getServer()->getLevelByName($this->config->get("lobby")["level"]);
-				$this->lobby=new Vector3($this->lobby["x"],$this->lobby["y"],$this->lobby["z"]);
+				$this->signlevel=$this->getServer()->getLevelByName($this->config->get("sign")["level"]);
+				$this->sign=new Vector3($this->sign["x"],$this->sign["y"],$this->sign["z"]);
 				$this->changeStatusSign();
 				break;
 			case 1:
+				$this->lobby=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("lobby",$this->lobby);
+				$this->config->save();
+				$this->SetStatus[$username]++;
+				$player->sendMessage(TextFormat::GREEN."lobby Noktasi Secildi");
+				$player->sendMessage(TextFormat::GREEN."Simdi 2. Doğus Noktasini Sec!");
+				$this->lobby=new Vector3($this->lobby["x"]+0.5,$this->lobby["y"],$this->lobby["z"]+0.5);
+				break;
+			case 2:
 				$this->pos1=array(
 					"x" =>$block->x,
 					"y" =>$block->y,
@@ -608,7 +624,7 @@ class Main extends PluginBase implements Listener
 				$player->sendMessage(TextFormat::GREEN."Simdi 2. Doğus Noktasini Sec!");
 				$this->pos1=new Vector3($this->pos1["x"]+0.5,$this->pos1["y"],$this->pos1["z"]+0.5);
 				break;
-			case 2:
+			case 3:
 				 $this->pos2=array(
 					"x" =>$block->x,
 					"y" =>$block->y,
@@ -621,7 +637,7 @@ class Main extends PluginBase implements Listener
 				$player->sendMessage(TextFormat::GREEN."Simdim3. yeri sec!");
 				$this->pos2=new Vector3($this->pos2["x"]+0.5,$this->pos2["y"],$this->pos2["z"]+0.5);
 				break;	
-			case 3:
+			case 4:
 				$this->pos3=array(
 					"x" =>$block->x,
 					"y" =>$block->y,
@@ -634,7 +650,7 @@ class Main extends PluginBase implements Listener
 				$player->sendMessage(TextFormat::GREEN."Simdi 4. Yeri Sec!");
 				$this->pos3=new Vector3($this->pos3["x"]+0.5,$this->pos3["y"],$this->pos3["z"]+0.5);
 				break;	
-			case 4:
+			case 5:
 				$this->pos4=array(
 					"x" =>$block->x,
 					"y" =>$block->y,
@@ -647,7 +663,7 @@ class Main extends PluginBase implements Listener
 				$player->sendMessage(TextFormat::GREEN."Simdi 5. Yeri Sec!");
 				$this->pos4=new Vector3($this->pos4["x"]+0.5,$this->pos4["y"],$this->pos4["z"]+0.5);
 				break;
-			case 5:
+			case 6:
 				$this->pos5=array(
 					"x" =>$block->x,
 					"y" =>$block->y,
@@ -660,7 +676,7 @@ class Main extends PluginBase implements Listener
 				$player->sendMessage(TextFormat::GREEN."Simdi 6. Yeri Sec!");
 				$this->pos5=new Vector3($this->pos5["x"]+0.5,$this->pos5["y"],$this->pos5["z"]+0.5);
 				break;
-			case 6:
+			case 7:
 				$this->pos6=array(
 					"x" =>$block->x,
 					"y" =>$block->y,
@@ -673,7 +689,7 @@ class Main extends PluginBase implements Listener
 				$player->sendMessage(TextFormat::GREEN."Simdi 7. Yeri Sec!");
 				$this->pos6=new Vector3($this->pos6["x"]+0.5,$this->pos6["y"],$this->pos6["z"]+0.5);
 				break;
-			case 7:
+			case 8:
 				$this->pos7=array(
 					"x" =>$block->x,
 					"y" =>$block->y,
@@ -686,7 +702,7 @@ class Main extends PluginBase implements Listener
 				$player->sendMessage(TextFormat::GREEN."Simdi 8. Yeri Sec!");
 				$this->pos7=new Vector3($this->pos7["x"]+0.5,$this->pos7["y"],$this->pos7["z"]+0.5);
 				break;	
-			case 8:
+			case 9:
 				$this->pos8=array(
 					"x" =>$block->x,
 					"y" =>$block->y,
@@ -696,12 +712,27 @@ class Main extends PluginBase implements Listener
 				$this->config->save();
 				$this->SetStatus[$username]++;
 				$player->sendMessage(TextFormat::GREEN."8. Yerde Secildi!");
-				$player->sendMessage(TextFormat::GREEN."TheQuiver has installed!");
+				$player->sendMessage(TextFormat::GREEN.".......!");
 				$this->pos8=new Vector3($this->pos8["x"]+0.5,$this->pos8["y"],$this->pos8["z"]+0.5);
 				break;
+			case 10:
+				$this->lastpos=array(
+					"x" =>$block->x,
+					"y" =>$block->y,
+					"z" =>$block->z,
+					"level" =>$levelname);
+				$this->config->set("lastpos",$this->lastpos);
+				$this->config->save();
+				$this->lastpos=new Vector3($this->lastpos["x"]+0.5,$this->lastpos["y"],$this->lastpos["z"]+0.5);
+				unset($this->SetStatus[$username]);
+				$player->sendMessage(TextFormat::GREEN."boş Yeri Secildi");
+				$player->sendMessage(TextFormat::GREEN."TheQuiver basarıyla Kurulud!");
+				$this->level=$this->getServer()->getLevelByName($this->config->get("pos1")["level"]);
+			}
+		}
 		else
 		{
-	                $lobby=$event->getPlayer()->getLevel()->getTile($event->getBlock());
+	        $lobby=$event->getPlayer()->getLevel()->getTile($event->getBlock());
 			if(isset($this->lastpos) && $this->lastpos!=array() && $lobby instanceof lobby && $lobby->getX()==$this->lobby->x && $lobby->getY()==$this->lobby->y && $lobby->getZ()==$this->lobby->z && $event->getPlayer()->getLevel()->getFolderName()==$this->config->get("lobby")["level"])
 			{
 				if(!$this->config->exists("lastpos"))

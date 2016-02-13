@@ -1,33 +1,33 @@
-name: TheQuiver
-main: TheQuiver\Main
+name: OITQ
+main: OITQ\Main
 version: 1.0.3
 api: [1.0.0]
 load: POSTWORLD
 author: EmreTr1
 commands:
- tq:
-  permission: TheQuiver.command.fsg
+ oitq:
+  permission: oitq.command.fsg
   description: TheQuiver
   usage: /tq <set|remove>
  lobby:
-  permission: TheQuiver.command.lobby
+  permission: oitq.command.lobby
   description: lobiye doner
   usage: /lobby
 permissions:
- TheQuiver.*:
+ oitq:
   description: hepsi
-  default: false
+  default: op
   children:
-   TheQuiver.command.*:
+   oitq.command:
     description: cocuk
-    default: false
+    default: op
     children:
-     TheQuiver.command.lobby:
+     oitq.command.lobby:
       description: lobi ye doner
       default: true
-     TheQuiver.command.fsg:
+     oitq.command.oitq:
       description: TheQuiver
       default: op
-   TheQuiver.touch.startgame:
+   oitq.touch.startgame:
     description: TheQuiver
     default: true
